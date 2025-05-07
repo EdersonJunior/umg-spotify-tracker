@@ -1,0 +1,115 @@
+openapi: 3.0.1
+info:
+  title: Spotify Track Metadata API - Developed by Ederson Junior
+  description: This is a simple REST API built for UMG's code challenge. It retrieves metadata and album covers from the Spotify API based on a given ISRC and stores the information securely.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /track/createTrack:
+    post:
+      summary: Create and store track data using ISRC
+      description: Given a valid ISRC, this endpoint call the track's metadata and cover image from Spotify, and stores them locally.
+      parameters:
+        - in: query
+          name: isrc
+          required: true
+          schema:
+            type: string
+          description: The ISRC (International Standard Recording Code) of the track
+      responses:
+        '200':
+          description: Track successfully processed and saved
+        '400':
+          description: Invalid ISRC or Spotify returned an error
+        '401':
+          description: Access denied. Make sure you are authenticated.
+        '500':
+          description: An unexpected error occurred
+      security:
+        - basicAuth: []
+
+  /track/getTrackMetadata:
+    get:
+      summary: Fetch stored metadata for a given track
+      description: Returns the previously stored metadata for the provided ISRC.
+      parameters:
+        - in: query
+          name: isrc
+          required: true
+          schema:
+            type: string
+          description: The ISRC of the track
+      responses:
+        '200':
+          description: Metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackDTO'
+        '404':
+          description: No track found for this ISRC
+        '401':
+          description: Access denied. Make sure you are authenticated.
+      security:
+        - basicAuth: []
+
+  /track/getCover:
+    get:
+      summary: Download album cover for a given ISRC
+      description: Returns the JPEG album cover previously saved during track creation.
+      parameters:
+        - in: query
+          name: isrc
+          required: true
+          schema:
+            type: string
+          description: The ISRC of the track
+      responses:
+        '200':
+          description: Album cover image returned successfully
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: No cover found for this ISRC
+        '401':
+          description: Access denied. Make sure you are authenticated.
+      security:
+        - basicAuth: []
+
+components:
+  schemas:
+    TrackDTO:
+      type: object
+      properties:
+        isrc:
+          type: string
+          example: USUM71703861
+        name:
+          type: string
+          example: Cut To The Feeling
+        artistName:
+          type: string
+          example: Carly Rae Jepsen
+        albumName:
+          type: string
+          example: Cut To The Feeling
+        albumId:
+          type: string
+          example: 6S9qcfPMsqtYQXVyeC7Hip
+        explicit:
+          type: boolean
+          example: false
+        playbackSeconds:
+          type: integer
+          example: 207
+
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

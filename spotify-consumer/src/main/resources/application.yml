@@ -1,0 +1,10 @@
+spotify:
+  client-id: 50bdb958498d493b8a1e8b998d584762
+  client-secret: 4ff2449a15df40c29d336e883e2573de
+
+app:
+  frontendurl: http://localhost:5173
+
+auth:
+  username: admin
+  password: admin
